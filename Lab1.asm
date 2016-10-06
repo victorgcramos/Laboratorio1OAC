@@ -177,6 +177,10 @@ loop5:
 	
  	blt $t4, $t2, loop5 #k<i
 exit5:	
+	mul $t5, $t2, $a0 #i*n
+	add $t5, $t5, $t3 #j + (i*n)
+	sll $t5, $t5, 3 #de 8 bits em 8 bits
+	add $t5, $t5, $a1
 	sdc1 $f18, ($t5) #a[i][j] = sum
 	
 	addi $t2, $t2, 1 #i++
@@ -204,7 +208,7 @@ loop7:
 	ldc1 $f20,($t5) # a[i][k]
 	
 	mul $t5, $t4, $a0 #k*n
-	add $t5, $t3, $t5 #j + (k*n)
+	add $t5, $t5, $t3 #j + (k*n)
 	sll $t5, $t5, 3 #de 8 bits em 8 bits
 	add $t5, $t5, $a1
 	ldc1 $f22, ($t5) #a[k][j]
@@ -215,16 +219,11 @@ loop7:
 	addi $t4, $t4, 1 #k++
 	blt $t4, $t3, loop7 #k<j
 exit7: 	
-	
+	mul $t5, $t2, $a0 #i*n
+	add $t5, $t5, $t3 #j + (i*n)
+	sll $t5, $t5, 3 #de 8 bits em 8 bits
+	add $t5, $t5, $a1
 	sdc1 $f18, ($t5) #a[i][j] = sum
-	
-	######### PRINT DOUBLE #########
-	li $v0,3
-	mov.d $f4,$f12
-	mov.d $f12,$f18
-	syscall
-	mov.d $f12,$f4
-	################################
 	
 	abs.d $f18, $f18 #fabs(sum)
 	
@@ -263,25 +262,8 @@ loop8:
 	ldc1 $f10, ($t5) #dum = a[imax][k]
 	ldc1 $f20, ($t6)
 	
-	sdc1 $f20, ($t5)#a[imax][k] = a[j][k]
-	
-	######### PRINT DOUBLE #########
-	li $v0,3
-	mov.d $f4,$f12
-	mov.d $f12,$f20
-	syscall
-	mov.d $f12,$f4
-	################################
-	
+	sdc1 $f20, ($t5)#a[imax][k] = a[j][k]	
 	sdc1 $f10, ($t6)#a[j][k] = dum
-	
-	######### PRINT DOUBLE #########
-	li $v0,3
-	mov.d $f4,$f12
-	mov.d $f12,$f18
-	syscall
-	mov.d $f12,$f4
-	################################
 	
 	addi $t4, $t4, 1
 	blt $t4, $a0, loop8
@@ -293,14 +275,6 @@ exit8:
 	add $t6, $t6, $t1#vv[j]
 	ldc1 $f24, ($t6)
 	sdc1 $f24, ($t8) #vv[imax] = vv[j]
-	
-	######### PRINT DOUBLE #########
-	li $v0,3
-	mov.d $f4,$f12
-	mov.d $f12,$f18
-	syscall
-	mov.d $f12,$f4
-	################################
 		
 cond3:	la $s1,indx
 	
@@ -352,12 +326,12 @@ erro0:
 PrintMatriz:
 	li $t0,0
 
-	move $t2,$a1
+	move $t5,$a1
 	
 	
 printLoop:
-	li $t1,0
-pl:	ldc1 $f12,($t2)
+	li $t6,0
+pl:	ldc1 $f12,($t5)
 	
 	li $v0,3 # printa o elemento da matriz
 	syscall
@@ -366,9 +340,9 @@ pl:	ldc1 $f12,($t2)
 	li $v0,4 # printa o tab
 	syscall
 	
-	addi $t2,$t2,8
-	addi $t1,$t1,1
-	blt $t1,$s0,pl
+	addi $t5,$t5,8
+	addi $t6,$t6,1
+	blt $t6,$s0,pl
 	
 	la $a0, pulaLinha
 	li $v0,4 # printa o enter
@@ -376,3 +350,4 @@ pl:	ldc1 $f12,($t2)
 	
 	addi $t0,$t0,1
 	blt $t0,$s0,printLoop
+	jr $ra
