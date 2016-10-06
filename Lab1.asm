@@ -199,7 +199,7 @@ loop7:
 	ldc1 $f20,($t5) # a[i][k]
 	
 	mul $t5, $t4, $a0 #k*n
-	add $t5, $t3, $t6 #j + (k*n)
+	add $t5, $t3, $t5 #j + (k*n)
 	sll $t5, $t5, 3 #de 8 bits em 8 bits
 	add $t5, $t5, $a1
 	ldc1 $f22, ($t5) #a[k][j]
@@ -213,18 +213,18 @@ exit7:
 	
 	sdc1 $f18, ($t5) #a[i][j] = sum
 	
-	abs.d $f10, $f10
+	abs.d $f18, $f18 #fabs(sum)
 	
 	sll $t8, $t2, 3
 	add $t8, $t8, $t1 
 	ldc1 $f24, ($t8) #vv[i]
 	
-	mul.d $f10, $f10, $f24 #dum = fabs(sum) * vv[i]
+	mul.d $f18, $f18, $f24 #dum = fabs(sum) * vv[i]
 	
-	c.lt.d 2, $f10,  $f12
+	c.lt.d 2, $f18,  $f12
 	bc1t 2, cond2
 
-	mov.d $f12, $f10 #big = dum
+	mov.d $f12, $f18 #big = dum
 	move $t9, $t2 #imax = i
 							
 cond2: 
@@ -233,12 +233,12 @@ cond2:
 exit6: 
 	beq $t2, $t9, cond3
 	
-	li $t4, 1
+	li $t4, 0
 	
 	bge $t4, $a0, exit8
 loop8:
 	mul $t5, $t9, $a0 #imax * n
-	add $t5, $t4, $t6 #k + (imax*n)
+	add $t5, $t4, $t5 #k + (imax*n)
 	sll $t5, $t5, 3 #de 8 em 8 bits
 	add $t5, $t5, $a1 #a[imax][k]
 	
@@ -334,12 +334,3 @@ pl:	ldc1 $f12,($t2)
 	
 	addi $t0,$t0,1
 	blt $t0,$s0,printLoop
-	
-
-#checar < / <=
-																							
-			
-
-
-
-#TODO: entender a decomposicao LU, e fazer os algoritmos
