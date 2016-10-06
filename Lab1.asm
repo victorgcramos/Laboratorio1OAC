@@ -138,7 +138,7 @@ exit2:
 exit1:		
 	li $t3, 0 #j = 0
 	
-	bgt $t3,$a0,exit3
+	bge $t3,$a0,exit3
 loop3:
 	li $t2, 0 #i = 0
 	
@@ -181,7 +181,7 @@ exit4:
 	
 	move $t2, $t3 #i = j
 	
-	bgt $t2, $a0, exit6 #Nao entra no for se nao passar na condicao
+	bge $t2, $a0, exit6 #Nao entra no for se nao passar na condicao
 loop6:
 	mul $t5, $t2, $a0 #i*n
 	add $t5, $t5, $t3 #j+(i*n)
@@ -222,20 +222,20 @@ exit7:
 	mul.d $f10, $f10, $f24 #dum = fabs(sum) * vv[i]
 	
 	c.lt.d 2, $f10,  $f12
-	bc1f 2, cond2
-	
+	bc1t 2, cond2
+
 	mov.d $f12, $f10 #big = dum
 	move $t9, $t2 #imax = i
 							
 cond2: 
 	addi $t2, $t2, 1 #i++
-	ble $t2, $a0, loop6 #i <=n
+	blt $t2, $a0, loop6 #i<n
 exit6: 
 	beq $t2, $t9, cond3
 	
 	li $t4, 1
 	
-	bgt $t4, $a0, exit8
+	bge $t4, $a0, exit8
 loop8:
 	mul $t5, $t9, $a0 #imax * n
 	add $t5, $t4, $t6 #k + (imax*n)
@@ -253,7 +253,7 @@ loop8:
 	sdc1 $f10, ($t6)#a[j][k] = dum
 	
 	addi $t4, $t4, 1
-	ble $t4, $a0, loop8
+	blt $t4, $a0, loop8
 	
 exit8: 			
 	sll $t8, $t9, 3
@@ -262,9 +262,9 @@ exit8:
 	add $t6, $t6, $t1#vv[j]
 	ldc1 $f24, ($t6)
 	sdc1 $f24, ($t8) #vv[imax] = vv[j]
-	
+		
 cond3:	la $s1,indx
-	la $t0,matriz
+	
 	ldc1 $f26,0($t0) # a[j][j]
 	
 	c.eq.d 3,$f26,$f8 # if (a[j][j] == 0)
@@ -275,11 +275,11 @@ cond3:	la $s1,indx
 	
 	# t4 = j + 1
 	addi $t2,$t3,1 # for (i=j+1;i<=n;i++)
-	bgt $t2, $a0, exit9
+	bge $t2, $a0, exit9
 
 loop9:		
 	mul $t5, $t2, $a0 #i * n
-	add $t5, $t3, $t6 #j + (i*n)
+	add $t5, $t3, $t5 #j + (i*n)
 	sll $t5, $t5, 3 #de 8 em 8 bits
 	add $t5, $t5, $a1 #a[i][j]
 	
@@ -288,7 +288,7 @@ loop9:
 	sdc1 $f30,($t5)
 	
 	addi $t2, $t2, 1
-	ble $t2, $a0, loop9
+	blt $t2, $a0, loop9
 exit9:
 	# } if
 	
@@ -298,7 +298,7 @@ cond4:
 	add $t0,$t0,$a1 # acrescenta no endere�o de come�o da matriz
 	
 	addi $t3, $t3, 1		
-	ble $t3,$a0,loop3
+	blt $t3,$a0,loop3
 exit3:	
 	jr $ra
 erro0:	
@@ -306,11 +306,11 @@ erro0:
 	li $v0, 4
 	syscall
 	j begin
-	
+
 PrintMatriz:
 	li $t0,0
 
-	move $t2,$s6
+	move $t2,$a1
 	
 	
 printLoop:
