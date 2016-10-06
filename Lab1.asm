@@ -7,6 +7,7 @@
 	leCoef: .asciiz "Informe o coeficiente M("
 	virgula: .asciiz ","
 	const: .double 0.0
+	tiny: .double 0.000000000000000000000000001
 	vetor: .space 24
 	indx: .space 40
 	const1Double: .double 1.0
@@ -21,6 +22,8 @@
 begin:	
 	li $s0,0 # $s0 vai ser o numero de linhas e colunas NxN
 	la $s6,matriz
+	la $t0,tiny
+	ldc1 $f6,($t0)
 	li $t0,1 # contador de linhas
 	li $t1,1 # contador de colunas
 
@@ -79,8 +82,10 @@ leMtx: 	la $a0, leCoef # printa mensagem para usuario informar o elemento da mat
 	la $a1,matriz
 	la $t0, const
 	ldc1 $f8,0($t0)
-
+	
 	jal DecomposicaoLU
+	
+	
 	jal PrintMatriz
 	
 fim:	la $v0, 10
@@ -213,6 +218,14 @@ exit7:
 	
 	sdc1 $f18, ($t5) #a[i][j] = sum
 	
+	######### PRINT DOUBLE #########
+	li $v0,3
+	mov.d $f4,$f12
+	mov.d $f12,$f18
+	syscall
+	mov.d $f12,$f4
+	################################
+	
 	abs.d $f18, $f18 #fabs(sum)
 	
 	sll $t8, $t2, 3
@@ -249,8 +262,26 @@ loop8:
 	
 	ldc1 $f10, ($t5) #dum = a[imax][k]
 	ldc1 $f20, ($t6)
+	
 	sdc1 $f20, ($t5)#a[imax][k] = a[j][k]
+	
+	######### PRINT DOUBLE #########
+	li $v0,3
+	mov.d $f4,$f12
+	mov.d $f12,$f20
+	syscall
+	mov.d $f12,$f4
+	################################
+	
 	sdc1 $f10, ($t6)#a[j][k] = dum
+	
+	######### PRINT DOUBLE #########
+	li $v0,3
+	mov.d $f4,$f12
+	mov.d $f12,$f18
+	syscall
+	mov.d $f12,$f4
+	################################
 	
 	addi $t4, $t4, 1
 	blt $t4, $a0, loop8
@@ -262,14 +293,25 @@ exit8:
 	add $t6, $t6, $t1#vv[j]
 	ldc1 $f24, ($t6)
 	sdc1 $f24, ($t8) #vv[imax] = vv[j]
+	
+	######### PRINT DOUBLE #########
+	li $v0,3
+	mov.d $f4,$f12
+	mov.d $f12,$f18
+	syscall
+	mov.d $f12,$f4
+	################################
 		
 cond3:	la $s1,indx
 	
 	ldc1 $f26,0($t0) # a[j][j]
 	
-	c.eq.d 3,$f26,$f8 # if (a[j][j] == 0)
-	bc1t 3,erro0 # salta para a label de erro
+	c.eq.d 3,$f26,$f8 # if (a[j][j] == 0){
+	bc1f 3,continua # salta para a label de erro
 	
+	mov.d $f26, $f6
+
+continua:
 	beq $t3,$a0,cond4 # if (j != n) {
 	div.d $f10,$f16,$f26 # dum=1.0/(a[j][j]);
 	
