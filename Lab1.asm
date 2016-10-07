@@ -5,6 +5,8 @@
 	msgErro0: .asciiz "Erro! ocorreu uma divisao por 0. Tente novamente."
 	leNMatriz: .asciiz "Qual o um N para uma matriz NxN? <ENTER> "
 	leCoef: .asciiz "Informe o coeficiente M("
+	msgprintLU: .asciiz "\nMatriz LU:\n"
+	msgprintmtx: .asciiz "\nMatriz informada:\n"
 	virgula: .asciiz ","
 	const: .double 0.0
 	tiny: .double 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
@@ -78,15 +80,18 @@ leMtx: 	la $a0, leCoef # printa mensagem para usuario informar o elemento da mat
 	addi $t0,$t0,1 # incrementa o valor do indice de linhas
 	
 	ble $t0,$s0,leMtx 
-	
+		
 	move $a0,$s0
 	la $a1,matriz
 	la $t0, const
 	ldc1 $f8,0($t0)
+
 	
 	jal DecomposicaoLU
-	
-	
+		
+	la $a0,msgprintLU
+	li $v0,4
+	syscall
 	jal PrintMatriz
 	
 fim:	la $v0, 10
@@ -321,7 +326,6 @@ erro0:
 
 PrintMatriz:
 	li $t0,0
-
 	move $t5,$a1
 	
 	
@@ -336,8 +340,7 @@ pl:	ldc1 $f12,($t5)
 	bc1t 0,segue
 	mov.d $f12,$f8
 	
-segue:	round.w.d $f12,$f12
-	li $v0,3 # printa o elemento da matriz
+segue:	li $v0,3 # printa o elemento da matriz
 	syscall
 	
 	la $a0, tab
