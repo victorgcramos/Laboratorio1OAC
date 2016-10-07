@@ -6,10 +6,9 @@
 	leNMatriz: .asciiz "Qual o um N para uma matriz NxN? <ENTER> "
 	leCoef: .asciiz "Informe o coeficiente M("
 	msgprintLU: .asciiz "\nMatriz LU:\n"
-	msgprintmtx: .asciiz "\nMatriz informada:\n"
 	virgula: .asciiz ","
 	const: .double 0.0
-	tiny: .double 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+	tiny: .double 0.000000000000000000000000000001
 	udf: .double 0.00000000001
 	vetor: .space 24
 	indx: .space 40
@@ -335,7 +334,7 @@ printLoop:
 	ldc1 $f10,($t4)
 	
 pl:	ldc1 $f12,($t5)
-	abs.d $f6,$f12
+	abs.d $f6,$f12 # pega o valor absoluto do número
 	c.le.d 0,$f10,$f6 # caso o valor seja muito pequeno, consideraremos ele como zero 
 	bc1t 0,segue
 	mov.d $f12,$f8
