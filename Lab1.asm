@@ -7,7 +7,8 @@
 	leCoef: .asciiz "Informe o coeficiente M("
 	virgula: .asciiz ","
 	const: .double 0.0
-	tiny: .double 0.000000000000000000000000001
+	tiny: .double 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+	udf: .double 0.00000000001
 	vetor: .space 24
 	indx: .space 40
 	const1Double: .double 1.0
@@ -326,8 +327,16 @@ PrintMatriz:
 	
 printLoop:
 	li $t6,0
-pl:	ldc1 $f12,($t5)
+	la $t4,udf
+	ldc1 $f10,($t4)
 	
+pl:	ldc1 $f12,($t5)
+	abs.d $f6,$f12
+	c.le.d 0,$f10,$f6 # caso o valor seja muito pequeno, consideraremos ele como zero 
+	bc1t 0,segue
+	mov.d $f12,$f8
+	
+segue:	round.w.d $f12,$f12
 	li $v0,3 # printa o elemento da matriz
 	syscall
 	
