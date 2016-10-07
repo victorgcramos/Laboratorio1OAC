@@ -114,12 +114,12 @@ DecomposicaoLU:
 	ldc1 $f16, 0($t5) # $f16 = 1.0
 	
 	move $t5, $a1 #$t5 = a[0][0]
-	bge $t2, $a0, exit1 #Nao entra no for se nao passar na condicao
+	bge $t2, $a0, exit1 #Condicao de entrada do for
 loop1:
 	mov.d $f12,$f8 # big = 0
 	li $t3, 0
 	
-	bge $t3, $a0, exit2 #Nao entra no for se nao passar na condicao
+	bge $t3, $a0, exit2 #Condicao de entrada do for
 loop2:
 	ldc1 $f10,($t5) # carrega o valor da matriz para o registrador $f10
 	abs.d $f10,$f10 # pega o valor absoluto da matriz
@@ -143,20 +143,20 @@ exit2:
 exit1:		
 	li $t3, 0 #j = 0
 	
-	bge $t3,$a0,exit3
+	bge $t3,$a0,exit3 #Condicao de entrada do for(j = 0; j< n; j++)
 loop3:
 	li $t2, 0 #i = 0
 	
-	bge $t2, $t3, exit4 #Nao entra no for se nao passar na condicao
+	bge $t2, $t3, exit4 #Condicao de entrada do for(i = 0; i< j; i++)
 loop4:	
 	mul $t5, $t2, $a0 #i*n
 	add $t5, $t5, $t3 #j+(i*n)
 	sll $t5, $t5, 3 #de 8 bits em 8 bits
 	add $t5, $t5, $a1
 	ldc1 $f18,($t5) # sum = a[i][j]
-	li $t4, 0 #i = 1
+	li $t4, 0 #k = 0
 	
-	bge $t4, $t2, exit5 #Nao entra no for se nao passar na condicao
+	bge $t4, $t2, exit5 #Condicao de entrada do for(k = 0; k< i; k++)
 loop5:
 	mul $t5, $t2, $a0 #i*n
 	add $t5, $t5, $t4 #k+(i*n)
@@ -190,7 +190,7 @@ exit4:
 	
 	move $t2, $t3 #i = j
 	
-	bge $t2, $a0, exit6 #Nao entra no for se nao passar na condicao
+	bge $t2, $a0, exit6 #Condicao de entrada do for(i = j; i< n; i++)
 loop6:
 	mul $t5, $t2, $a0 #i*n
 	add $t5, $t5, $t3 #j+(i*n)
@@ -199,7 +199,7 @@ loop6:
 	ldc1 $f18,($t5) # sum = a[i][j]
 	li $t4, 0
 	
-	bge $t4, $t3, exit7  #Nao entra no for se nao passar na condicao
+	bge $t4, $t3, exit7  #Condicao de entrada do for(k = 0; k< j; k++)
 loop7:
 	mul $t5, $t2, $a0 #i*n
 	add $t5, $t5, $t4 #k+(i*n)
@@ -276,17 +276,15 @@ exit8:
 	ldc1 $f24, ($t6)
 	sdc1 $f24, ($t8) #vv[imax] = vv[j]
 		
-cond3:	la $s1,indx
-	
+cond3:	
 	ldc1 $f26,0($t0) # a[j][j]
 	
 	c.eq.d 3,$f26,$f8 # if (a[j][j] == 0){
-	bc1f 3,continua # salta para a label de erro
-	
-	mov.d $f26, $f6
+	bc1f 3,continua # continua o programa
+
+	mov.d $f26, $f6 #substitui por um valor proximo a zero
 
 continua:
-	beq $t3,$a0,cond4 # if (j != n) {
 	div.d $f10,$f16,$f26 # dum=1.0/(a[j][j]);
 	
 	# t4 = j + 1
@@ -305,10 +303,7 @@ loop9:
 	
 	addi $t2, $t2, 1
 	blt $t2, $a0, loop9
-exit9:
-	# } if
-	
-cond4:		
+exit9:		
 	addi $t0,$a0,1 # pega sempre os elementos das diagonais, pois sempre eles possuem a diferenca
 	sll $t0,$t0,3 # do numero de linhas + 1
 	add $t0,$t0,$a1 # acrescenta no endere�o de come�o da matriz
