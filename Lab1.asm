@@ -2,7 +2,7 @@
 	tituloPrograma: .asciiz "*** DECOMPOSICAO LU DE MATRIZES QUADRADAS ***"
 	pulaLinha: .asciiz "\n"
 	tab: .asciiz "	"
-	msgErro0: .asciiz "Erro! ocorreu uma divisao por 0. Tente novamente."
+	msgErro0: .asciiz "Erro! ocorreu uma divisao por 0. Tente novamente.\n\n"
 	leNMatriz: .asciiz "Qual o um N para uma matriz NxN? <ENTER> "
 	leCoef: .asciiz "Informe o coeficiente M("
 	msgprintLU: .asciiz "\nMatriz LU:\n"
