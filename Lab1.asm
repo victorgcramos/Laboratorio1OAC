@@ -1,3 +1,9 @@
+# Laboratório 1 - Organizacao e Arquitetura de Computadores, Turma D
+# Victor Guedes - victorgcramos@gmail.com
+# 	Matrícula: 13/0145688
+# Eduardo Sousa - edusousa1996@hotmail.com
+# 	Matrícula: 13/0108405
+
 .data
 	tituloPrograma: .asciiz "*** DECOMPOSICAO LU DE MATRIZES QUADRADAS ***"
 	pulaLinha: .asciiz "\n"
